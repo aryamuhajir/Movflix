@@ -6,11 +6,14 @@ import com.listfilm.andika.model.movie.GetMoviee
 
 
 import com.listfilm.andika.network.ApiClient
+import com.listfilm.andika.repository.FilmRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Response
+import javax.inject.Inject
 
-
-class ViewModelMovie (): ViewModel() {
+@HiltViewModel
+class ViewModelMovie @Inject constructor(private val repository : FilmRepository) : ViewModel() {
     var liveDataFilm : MutableLiveData<List<GetMoviee>> = MutableLiveData()
     var liveDataNewFilm : MutableLiveData<List<GetMoviee>> = MutableLiveData()
     var liveDataRecFilm : MutableLiveData<List<GetMoviee>> = MutableLiveData()
@@ -30,25 +33,7 @@ class ViewModelMovie (): ViewModel() {
 
 
     fun PopularMovieApi(){
-        ApiClient.instance.getPopularMovie()
-            .enqueue(object : retrofit2.Callback<List<GetMoviee>>{
-                override fun onResponse(
-                    call: Call<List<GetMoviee>>,
-                    response: Response<List<GetMoviee>>
-                ) {
-                    if (response.isSuccessful){
-                        liveDataFilm.postValue(response.body())
-
-                    }else{
-                        liveDataFilm.postValue(null)
-
-                    }
-                }
-
-                override fun onFailure(call: Call<List<GetMoviee>>, t: Throwable) {
-                    liveDataFilm.postValue(null)
-                }
-            })
+        repository.PopularMovieApi(liveDataFilm)
             }
 
     fun NewMovieApi(){
